@@ -23,18 +23,18 @@ const MOCK_PROPERTY = {
   daysOnMarket: 14,
   description: "Experience unparalleled luxury in this exquisitely designed penthouse at the prestigious Icon. Boasting panoramic views of the Atlantic Ocean and Miami skyline, this masterpiece features soaring 12-foot ceilings, custom Italian cabinetry, and a wraparound terrace perfect for entertaining.",
   images: [
-    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1200&auto=format&fit=crop"
+    { url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop", caption: "Wraparound oceanfront terrace with unobstructed panoramic views" },
+    { url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop", caption: "Soaring 12-foot ceilings in the main living area" },
+    { url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop", caption: "Custom Italian cabinetry in the gourmet chef's kitchen" },
+    { url: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1200&auto=format&fit=crop", caption: "Primary suite with private balcony access" },
+    { url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop", caption: "Spa-inspired primary bathroom with freestanding soaking tub" },
+    { url: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=1200&auto=format&fit=crop", caption: "Secondary bedroom currently configured as an executive office" },
+    { url: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=1200&auto=format&fit=crop", caption: "" },
+    { url: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop", caption: "" },
+    { url: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1200&auto=format&fit=crop", caption: "Private elevator foyer entrance" },
+    { url: "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1200&auto=format&fit=crop", caption: "" },
+    { url: "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?q=80&w=1200&auto=format&fit=crop", caption: "Temperature-controlled wine cellar" },
+    { url: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1200&auto=format&fit=crop", caption: "Icon luxury amenities: infinity pool overlooking the bay" }
   ],
   features: ["Wraparound Balcony", "Smart Home Automation", "Private Elevator", "Wine Cellar", "Gourmet Chef's Kitchen", "Ocean Views", "24/7 Concierge", "Infinity Pool Access"]
 };
@@ -66,7 +66,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
           "@type": "RealEstateListing",
           "name": property.address,
           "description": property.description,
-          "image": property.images,
+          "image": property.images.map(img => img.url),
           "offers": {
             "@type": "Offer",
             "price": property.price.replace(/[^0-9]/g, ''),
@@ -79,7 +79,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
       <section className="relative h-[70vh] w-full pt-20 cursor-pointer group" onClick={() => setLightboxIndex(0)}>
         <div className="absolute inset-0 z-0">
           <Image 
-            src={property.images[0]} 
+            src={property.images[0].url} 
             alt={property.address}
             fill
             className="object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -214,7 +214,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                       onClick={() => setLightboxIndex(i + 1)}
                     >
                       <Image 
-                        src={img} 
+                        src={img.url} 
                         alt={`Property interior ${i + 1}`} 
                         fill 
                         className="object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -279,6 +279,14 @@ export default function SingleListingPage({ params }: { params: { slug: string }
               <X size={36} />
             </button>
 
+            {/* Header: Address and Neighborhood */}
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center z-[110] pointer-events-none">
+              <h2 className="font-serif text-3xl text-white mb-1 drop-shadow-lg">{property.address}</h2>
+              <p className="font-sans text-sm text-white/80 uppercase tracking-widest drop-shadow-md">
+                {property.neighborhood}, {property.city}
+              </p>
+            </div>
+
             {/* Navigation Buttons */}
             <button 
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
@@ -294,19 +302,26 @@ export default function SingleListingPage({ params }: { params: { slug: string }
             </button>
 
             {/* Main Image */}
-            <div className="relative w-full h-full max-w-6xl max-h-[85vh] mx-16" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full h-full max-w-6xl max-h-[80vh] mx-16 mt-8" onClick={(e) => e.stopPropagation()}>
               <Image
-                src={property.images[lightboxIndex]}
-                alt={`Property Photo ${lightboxIndex + 1}`}
+                src={property.images[lightboxIndex].url}
+                alt={property.images[lightboxIndex].caption || `Property Photo ${lightboxIndex + 1}`}
                 fill
                 className="object-contain"
                 priority
               />
             </div>
 
-            {/* Counter */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-sans tracking-widest text-sm">
-              {lightboxIndex + 1} / {property.images.length}
+            {/* Bottom Bar: Counter and Caption */}
+            <div className="absolute bottom-8 left-0 right-0 px-12 flex flex-col items-center justify-center pointer-events-none">
+              {property.images[lightboxIndex].caption && (
+                <p className="font-sans text-lg text-white mb-4 bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full text-center max-w-2xl">
+                  {property.images[lightboxIndex].caption}
+                </p>
+              )}
+              <div className="text-white/70 font-sans tracking-widest text-sm bg-black/40 backdrop-blur-sm px-4 py-1 rounded-full">
+                {lightboxIndex + 1} / {property.images.length}
+              </div>
             </div>
           </motion.div>
         )}
