@@ -18,9 +18,9 @@ const MOCK_PROPERTY = {
   yearBuilt: "2018",
   description: "Experience unparalleled luxury in this exquisitely designed penthouse at the prestigious Icon. Boasting panoramic views of the Atlantic Ocean and Miami skyline, this masterpiece features soaring 12-foot ceilings, custom Italian cabinetry, and a wraparound terrace perfect for entertaining.",
   images: [
-    "https://images.unsplash.com/photo-1600566753086-00f18efc2294?q=80&w=2000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd40?q=80&w=1200&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop"
   ],
   features: ["Wraparound Balcony", "Smart Home Automation", "Private Elevator", "Wine Cellar", "Gourmet Chef's Kitchen", "Ocean Views"]
 };

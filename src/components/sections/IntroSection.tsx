@@ -39,7 +39,7 @@ export function IntroSection() {
               className="relative aspect-[4/5] md:aspect-video lg:aspect-[4/3] w-full overflow-hidden"
             >
               <Image 
-                src="https://images.unsplash.com/photo-1613490900233-ea41ddbc4b94?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
                 alt="Luxury living room interior"
                 fill
                 className="object-cover"

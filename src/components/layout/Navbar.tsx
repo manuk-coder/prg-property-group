@@ -32,13 +32,13 @@ export function Navbar() {
         }`}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <Link href="/" className="relative z-50 flex items-center gap-3 bg-[var(--color-primary-bg)] px-5 py-3 shadow-md">
-             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1A1A1A]">
+          <Link href="/" className={`relative z-50 flex items-center gap-3 transition-colors duration-300 ${isScrolled ? "text-[#1A1A1A]" : "text-white"}`}>
+             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                <rect x="4" y="4" width="28" height="28" stroke="currentColor" strokeWidth="1.5" />
                <rect x="8" y="8" width="20" height="20" stroke="currentColor" strokeWidth="1.5" />
                <path d="M14 23V13H19C21.2091 13 23 14.7909 23 17C23 19.2091 21.2091 21 19 21H16V23H14ZM16 19H19C20.1046 19 21 18.1046 21 17C21 15.8954 20.1046 15 19 15H16V19Z" fill="currentColor" />
              </svg>
-             <span className="font-serif text-lg md:text-xl font-bold tracking-tight text-[#1A1A1A]">
+             <span className="font-serif text-lg md:text-xl font-bold tracking-tight">
                PRG PROPERTY GROUP
              </span>
           </Link>

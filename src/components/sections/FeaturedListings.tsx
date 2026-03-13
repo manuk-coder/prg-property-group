@@ -21,7 +21,7 @@ const FEATURED_PROPERTIES = [
     neighborhood: "South Beach",
     price: "$8,900,000",
     specs: "4 Bed | 5 Bath | 4,800 SF",
-    image: "https://images.unsplash.com/photo-1600566753086-00f18efc2294?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
     slug: "450-alton-road"
   },
   {
