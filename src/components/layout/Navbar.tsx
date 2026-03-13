@@ -9,6 +9,7 @@ import { Menu, X } from "lucide-react";
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
 
   // Pages that start with a dark background hero (Homepage, Single Listing)
@@ -26,6 +27,16 @@ export function Navbar() {
 
   const navLinks = [
     { name: "Listings", href: "/listings" },
+    { 
+      name: "Neighborhoods", 
+      href: "#",
+      dropdown: [
+        { name: "Key Biscayne", href: "/neighborhoods/key-biscayne" },
+        { name: "Miami Midtown", href: "/neighborhoods/midtown" },
+        { name: "Design District", href: "/neighborhoods/design-district" },
+      ]
+    },
+    { name: "Management", href: "/property-management" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -52,15 +63,56 @@ export function Navbar() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`text-sm uppercase tracking-widest font-semibold transition-colors hover:text-[var(--color-accent-gold)] ${
-                  !isDarkHeroPage || isScrolled ? "text-[var(--color-primary-text)]" : "text-white"
-                }`}
+              <div 
+                key={link.name} 
+                className="relative group"
+                onMouseEnter={() => link.dropdown && setIsDropdownOpen(true)}
+                onMouseLeave={() => link.dropdown && setIsDropdownOpen(false)}
               >
-                {link.name}
-              </Link>
+                {link.href === "#" ? (
+                  <button
+                    className={`text-sm uppercase tracking-widest font-semibold transition-colors flex items-center gap-1 ${
+                      !isDarkHeroPage || isScrolled ? "text-[var(--color-primary-text)] hover:text-[var(--color-accent-gold)]" : "text-white hover:text-gray-300"
+                    }`}
+                  >
+                    {link.name}
+                  </button>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={`text-sm uppercase tracking-widest font-semibold transition-colors ${
+                      !isDarkHeroPage || isScrolled ? "text-[var(--color-primary-text)] hover:text-[var(--color-accent-gold)]" : "text-white hover:text-gray-300"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                )}
+
+                {/* Dropdown Menu */}
+                {link.dropdown && (
+                  <AnimatePresence>
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-4 w-56 bg-white shadow-xl py-4 flex flex-col gap-2 rounded-sm border border-gray-100"
+                      >
+                        {link.dropdown.map(subItem => (
+                          <Link
+                            key={subItem.name}
+                            href={subItem.href}
+                            className="px-6 py-2 text-xs uppercase tracking-widest font-semibold text-gray-600 hover:text-[var(--color-accent-gold)] hover:bg-gray-50 transition-colors"
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </div>
             ))}
           </nav>
 
@@ -94,13 +146,29 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 + index * 0.1 }}
                 >
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-4xl font-serif font-bold text-[var(--color-primary-text)] hover:text-[var(--color-accent-gold)] transition-colors"
-                  >
-                    {link.name}
-                  </Link>
+                  {link.href === "#" ? (
+                    <div className="flex flex-col items-center gap-4">
+                      <span className="text-2xl font-serif font-bold text-gray-400 uppercase tracking-wider">{link.name}</span>
+                      {link.dropdown?.map(subItem => (
+                        <Link
+                          key={subItem.name}
+                          href={subItem.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-xl font-serif font-bold text-[var(--color-primary-text)] hover:text-[var(--color-accent-gold)] transition-colors"
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-4xl font-serif font-bold text-[var(--color-primary-text)] hover:text-[var(--color-accent-gold)] transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
             </nav>

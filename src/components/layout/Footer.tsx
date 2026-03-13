@@ -5,9 +5,9 @@ export function Footer() {
   return (
     <footer className="bg-[#1A1A1A] text-[#FAF8F5] pt-20 pb-10">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
           {/* Brand */}
-          <div className="col-span-1 md:col-span-1 flex flex-col items-start gap-6">
+          <div className="col-span-1 md:col-span-2 flex flex-col items-start gap-6">
             <Link href="/" className="flex items-center gap-3 text-white hover:text-[var(--color-accent-gold)] transition-colors">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="4" y="4" width="28" height="28" stroke="currentColor" strokeWidth="1.5" />
@@ -29,8 +29,19 @@ export function Footer() {
             <ul className="space-y-4 font-sans text-sm text-gray-400">
               <li><Link href="/" className="hover:text-[var(--color-accent-gold)] transition-colors">Portfolio</Link></li>
               <li><Link href="/listings" className="hover:text-[var(--color-accent-gold)] transition-colors">Exclusive Listings</Link></li>
+              <li><Link href="/property-management" className="hover:text-[var(--color-accent-gold)] transition-colors">Property Management</Link></li>
               <li><Link href="/about" className="hover:text-[var(--color-accent-gold)] transition-colors">Our Approach</Link></li>
               <li><Link href="/contact" className="hover:text-[var(--color-accent-gold)] transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+
+          {/* Neighborhoods */}
+          <div>
+            <h4 className="font-serif text-lg mb-6 tracking-wide">Neighborhoods</h4>
+            <ul className="space-y-4 font-sans text-sm text-gray-400">
+              <li><Link href="/neighborhoods/key-biscayne" className="hover:text-[var(--color-accent-gold)] transition-colors">Key Biscayne</Link></li>
+              <li><Link href="/neighborhoods/midtown" className="hover:text-[var(--color-accent-gold)] transition-colors">Miami Midtown</Link></li>
+              <li><Link href="/neighborhoods/design-district" className="hover:text-[var(--color-accent-gold)] transition-colors">Design District</Link></li>
             </ul>
           </div>
 
