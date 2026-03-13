@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { RootLayoutClient } from "@/components/layout/RootLayoutClient";
+import { LocalBusinessSchema } from "@/components/seo/LocalBusinessSchema";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${dmSans.variable} antialiased`}
       >
         <RootLayoutClient>
+          <LocalBusinessSchema />
           {children}
         </RootLayoutClient>
       </body>

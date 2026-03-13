@@ -31,6 +31,21 @@ export default function SingleListingPage({ params }: { params: { slug: string }
 
   return (
     <div className="bg-[var(--color-primary-bg)] min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "RealEstateListing",
+          "name": property.address,
+          "description": property.description,
+          "image": property.images,
+          "offers": {
+            "@type": "Offer",
+            "price": property.price.replace(/[^0-9]/g, ''),
+            "priceCurrency": "USD"
+          }
+        })}}
+      />
       
       {/* Hero Gallery */}
       <section className="relative h-[70vh] w-full pt-20">

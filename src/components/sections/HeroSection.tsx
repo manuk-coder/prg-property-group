@@ -1,17 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export function HeroSection() {
   return (
     <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
       {/* Background Image with Parallax Overlay */}
-      <div 
-        className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80')",
-        }}
-      >
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80"
+          alt="Luxury waterfront living room overlooking Miami"
+          fill
+          priority
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
