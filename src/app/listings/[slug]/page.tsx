@@ -290,19 +290,19 @@ export default function SingleListingPage({ params }: { params: { slug: string }
             {/* Navigation Buttons */}
             <button 
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
-              className="absolute left-6 text-white/50 hover:text-white transition-colors z-[110] p-4"
+              className="absolute left-2 md:left-6 text-white/50 hover:text-white transition-colors z-[110] p-2 md:p-4"
             >
-              <ChevronLeft size={48} />
+              <ChevronLeft size={48} className="w-8 h-8 md:w-12 md:h-12" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); nextImage(); }}
-              className="absolute right-6 text-white/50 hover:text-white transition-colors z-[110] p-4"
+              className="absolute right-2 md:right-6 text-white/50 hover:text-white transition-colors z-[110] p-2 md:p-4"
             >
-              <ChevronRight size={48} />
+              <ChevronRight size={48} className="w-8 h-8 md:w-12 md:h-12" />
             </button>
 
             {/* Main Image */}
-            <div className="relative w-full h-full max-w-6xl max-h-[80vh] mx-16 mt-8" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full h-full max-w-6xl max-h-[70vh] md:max-h-[80vh] mx-2 md:mx-16 mt-8" onClick={(e) => e.stopPropagation()}>
               <Image
                 src={property.images[lightboxIndex].url}
                 alt={property.images[lightboxIndex].caption || `Property Photo ${lightboxIndex + 1}`}
@@ -313,13 +313,13 @@ export default function SingleListingPage({ params }: { params: { slug: string }
             </div>
 
             {/* Bottom Bar: Counter and Caption */}
-            <div className="absolute bottom-8 left-0 right-0 px-12 flex flex-col items-center justify-center pointer-events-none">
+            <div className="absolute bottom-8 left-0 right-0 px-4 md:px-12 flex flex-col items-center justify-center pointer-events-none">
               {property.images[lightboxIndex].caption && (
-                <p className="font-sans text-lg text-white mb-4 bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full text-center max-w-2xl">
+                <p className="font-sans text-sm md:text-lg text-white mb-4 bg-black/40 backdrop-blur-sm px-4 md:px-6 py-2 rounded-full text-center max-w-xs md:max-w-2xl line-clamp-3 md:line-clamp-none">
                   {property.images[lightboxIndex].caption}
                 </p>
               )}
-              <div className="text-white/70 font-sans tracking-widest text-sm bg-black/40 backdrop-blur-sm px-4 py-1 rounded-full">
+              <div className="text-white/70 font-sans tracking-widest text-xs md:text-sm bg-black/40 backdrop-blur-sm px-4 py-1 rounded-full">
                 {lightboxIndex + 1} / {property.images.length}
               </div>
             </div>
