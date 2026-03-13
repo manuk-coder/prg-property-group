@@ -2,12 +2,18 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Pages that start with a dark background hero (Homepage, Single Listing)
+  const isDarkHeroPage = pathname === "/" || pathname?.startsWith("/listings/");
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +38,7 @@ export function Navbar() {
         }`}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <Link href="/" className={`relative z-50 flex items-center gap-3 transition-colors duration-300 ${isScrolled ? "text-[#1A1A1A]" : "text-white"}`}>
+          <Link href="/" className={`relative z-50 flex items-center gap-3 transition-colors duration-300 ${!isDarkHeroPage || isScrolled ? "text-[#1A1A1A]" : "text-white"}`}>
              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                <rect x="4" y="4" width="28" height="28" stroke="currentColor" strokeWidth="1.5" />
                <rect x="8" y="8" width="20" height="20" stroke="currentColor" strokeWidth="1.5" />
@@ -50,7 +56,7 @@ export function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={`text-sm uppercase tracking-widest font-semibold transition-colors hover:text-[var(--color-accent-gold)] ${
-                  isScrolled ? "text-[var(--color-primary-text)]" : "text-white"
+                  !isDarkHeroPage || isScrolled ? "text-[var(--color-primary-text)]" : "text-white"
                 }`}
               >
                 {link.name}
@@ -61,7 +67,7 @@ export function Navbar() {
           {/* Mobile Toggle */}
           <button
             className={`md:hidden relative z-50 p-2 transition-colors ${
-              isMobileMenuOpen || isScrolled ? "text-[var(--color-primary-text)]" : "text-white"
+              isMobileMenuOpen || !isDarkHeroPage || isScrolled ? "text-[var(--color-primary-text)]" : "text-white"
             }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
