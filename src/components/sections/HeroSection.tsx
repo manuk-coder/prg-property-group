@@ -23,18 +23,27 @@ export function HeroSection() {
            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <span className="text-[var(--color-accent-gold)] uppercase tracking-[0.2em] text-sm font-semibold mb-6 block">
-            South Florida Real Estate
+            PRG Property Group
           </span>
         </motion.div>
         
         <motion.h1 
-          className="text-white font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter mb-8"
+          className="text-white font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter mb-6"
           initial={{ opacity: 0, clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)' }}
           animate={{ opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.77, 0, 0.175, 1] }}
         >
-          YOUR MOVE.<br />ELEVATED.
+          LIVING & INVESTING,<br />ELEVATED.
         </motion.h1>
+
+        <motion.p
+          className="text-white/90 font-sans text-lg md:text-xl max-w-2xl mx-auto mb-8 font-light"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.8 }}
+        >
+          Discover Your Perfect Home or Prime Investment in Key Biscayne, Midtown, or the Design District.
+        </motion.p>
 
         <motion.div
            initial={{ opacity: 0, y: 20 }}
