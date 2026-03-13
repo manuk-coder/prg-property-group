@@ -17,15 +17,7 @@ export function HeroSection() {
 
       {/* Content Container */}
       <div className="relative z-10 text-center px-4 w-full max-w-5xl mt-20">
-        <motion.div
-           initial={{ opacity: 0, y: 50 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="text-[var(--color-accent-gold)] uppercase tracking-[0.2em] text-sm font-semibold mb-6 block">
-            PRG Property Group
-          </span>
-        </motion.div>
+
         
         <motion.h1 
           className="text-white font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter mb-6"
