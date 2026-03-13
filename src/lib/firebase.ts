@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -11,8 +11,14 @@ const firebaseConfig = {
   appId: "1:892372337003:web:01d163aa49133f16be0c2e"
 };
 
-// Initialize Firebase only if it hasn't been initialized already (crucial for Next.js SSR)
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+  // Bypass Next.js intercepting the native fetch stream causing infinite hangs
+  initializeFirestore(app, { experimentalForceLongPolling: true });
+} else {
+  app = getApp();
+}
 
 // Initialize Cloud Firestore and Cloud Storage
 const db = getFirestore(app);
