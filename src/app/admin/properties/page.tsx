@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Edit2, Trash2, Loader2, Home } from "lucide-react";
-import { getAllProperties } from "@/lib/firebaseUtils";
+import { getAdminProperties } from "@/lib/firebaseUtils";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -13,7 +13,7 @@ export default function AdminPropertiesList() {
 
   const fetchProperties = async () => {
     setLoading(true);
-    const data = await getAllProperties();
+    const data = await getAdminProperties();
     setProperties(data);
     setLoading(false);
   };

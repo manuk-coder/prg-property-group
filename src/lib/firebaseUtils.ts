@@ -21,6 +21,21 @@ export async function getAllProperties() {
 }
 
 /**
+ * Fetch all properties regardless of status for the Admin Dashboard.
+ */
+export async function getAdminProperties() {
+  try {
+    const propertiesRef = collection(db, 'properties');
+    const q = query(propertiesRef, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching admin properties:", error);
+    return [];
+  }
+}
+
+/**
  * Fetch a single property by its ID (slug).
  */
 export async function getPropertyBySlug(slug: string) {

@@ -7,39 +7,6 @@ import Link from "next/link";
 import { ArrowLeft, Bed, Bath, Square, MapPin, Calendar, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { getPropertyBySlug } from "@/lib/firebaseUtils";
 
-// Mock data to match what was generated previously. In a real app, this is fetched via slug.
-const MOCK_PROPERTY = {
-  address: "450 Alton Road",
-  city: "Miami Beach",
-  neighborhood: "South Beach",
-  price: "$8,900,000",
-  type: "Condo",
-  beds: 4,
-  baths: 5,
-  sqft: "4,800",
-  yearBuilt: "2018",
-  hoaFee: "$2,450/mo",
-  propertyTaxes: "$68,500/yr",
-  lotSize: "N/A (Penthouse)",
-  daysOnMarket: 14,
-  description: "Experience unparalleled luxury in this exquisitely designed penthouse at the prestigious Icon. Boasting panoramic views of the Atlantic Ocean and Miami skyline, this masterpiece features soaring 12-foot ceilings, custom Italian cabinetry, and a wraparound terrace perfect for entertaining.",
-  images: [
-    { url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop", caption: "Wraparound oceanfront terrace with unobstructed panoramic views" },
-    { url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop", caption: "Soaring 12-foot ceilings in the main living area" },
-    { url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop", caption: "Custom Italian cabinetry in the gourmet chef's kitchen" },
-    { url: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1200&auto=format&fit=crop", caption: "Primary suite with private balcony access" },
-    { url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop", caption: "Spa-inspired primary bathroom with freestanding soaking tub" },
-    { url: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=1200&auto=format&fit=crop", caption: "Secondary bedroom currently configured as an executive office" },
-    { url: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=1200&auto=format&fit=crop", caption: "" },
-    { url: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop", caption: "" },
-    { url: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1200&auto=format&fit=crop", caption: "Private elevator foyer entrance" },
-    { url: "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1200&auto=format&fit=crop", caption: "" },
-    { url: "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?q=80&w=1200&auto=format&fit=crop", caption: "Temperature-controlled wine cellar" },
-    { url: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1200&auto=format&fit=crop", caption: "Icon luxury amenities: infinity pool overlooking the bay" }
-  ],
-  features: ["Wraparound Balcony", "Smart Home Automation", "Private Elevator", "Wine Cellar", "Gourmet Chef's Kitchen", "Ocean Views", "24/7 Concierge", "Infinity Pool Access"]
-};
-
 export default function SingleListingPage({ params }: { params: { slug: string } }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [property, setProperty] = useState<any>(null);
@@ -48,12 +15,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
   useEffect(() => {
     const fetchProperty = async () => {
       const dbProp = await getPropertyBySlug(params.slug);
-      if (dbProp) {
-        setProperty(dbProp);
-      } else {
-        // Fallback to mock data if not in DB to preserve UI demos
-        setProperty(MOCK_PROPERTY);
-      }
+      setProperty(dbProp || null);
       setLoading(false);
     };
     fetchProperty();
@@ -64,6 +26,18 @@ export default function SingleListingPage({ params }: { params: { slug: string }
       <div className="min-h-screen bg-[var(--color-primary-bg)] flex flex-col items-center justify-center pt-24">
         <Loader2 className="w-8 h-8 animate-spin text-[var(--color-accent-gold)] mb-4" />
         <p className="font-sans text-xs uppercase tracking-widest text-gray-500 font-bold">Accessing Secure Vault...</p>
+      </div>
+    );
+  }
+
+  if (!property) {
+    return (
+      <div className="min-h-screen bg-[var(--color-primary-bg)] flex flex-col items-center justify-center pt-24">
+        <h1 className="font-serif text-3xl font-bold mb-2">Property Not Found</h1>
+        <p className="font-sans text-gray-500 mb-6">The listing you are looking for does not exist or has been removed.</p>
+        <Link href="/listings" className="bg-black text-white px-6 py-3 uppercase tracking-widest text-xs font-bold hover:bg-[var(--color-accent-gold)] transition-colors">
+          Return to Portfolio
+        </Link>
       </div>
     );
   }

@@ -25,15 +25,8 @@ export function Navbar() {
 
     const fetchNeighborhoods = async () => {
       const hoods = await getFeaturedNeighborhoods();
-      if (hoods.length > 0) {
-        setDynamicNeighborhoods(hoods.map((h: any) => ({ name: h.name, href: `/neighborhoods/${h.id}` })));
-      } else {
-        // Fallback if DB is empty during initial setup
-        setDynamicNeighborhoods([
-          { name: "Key Biscayne", href: "/neighborhoods/key-biscayne" },
-          { name: "Miami Midtown", href: "/neighborhoods/midtown" },
-          { name: "Design District", href: "/neighborhoods/design-district" },
-        ]);
+      if (hoods && hoods.length > 0) {
+         setDynamicNeighborhoods(hoods.map((h: any) => ({ name: h.name, href: `/neighborhoods/${h.id}` })));
       }
     };
 

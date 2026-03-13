@@ -7,15 +7,6 @@ import Link from "next/link";
 import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import { getAllProperties } from "@/lib/firebaseUtils";
 
-const ALL_LISTINGS = [
-  { id: 1, address: "1200 Brickell Bay Dr", city: "Miami", neighborhood: "Brickell", price: "$4,250,000", type: "Condo", beds: 3, baths: 3.5, sqft: "3,100", image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1600&auto=format&fit=crop", slug: "1200-brickell-bay-dr" },
-  { id: 2, address: "450 Alton Road", city: "Miami Beach", neighborhood: "South Beach", price: "$8,900,000", type: "Condo", beds: 4, baths: 5, sqft: "4,800", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1600&auto=format&fit=crop", slug: "450-alton-road" },
-  { id: 3, address: "9800 SW 67th Ave", city: "Pinecrest", neighborhood: "Pinecrest", price: "$5,750,000", type: "Single Family", beds: 6, baths: 7, sqft: "8,200", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop", slug: "9800-sw-67th-ave" },
-  { id: 4, address: "1350 S Dixie Hwy", city: "Coral Gables", neighborhood: "Coral Gables", price: "$3,100,000", type: "Townhouse", beds: 4, baths: 4, sqft: "3,500", image: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=1600&auto=format&fit=crop", slug: "1350-s-dixie-hwy" },
-  { id: 5, address: "2500 S Bayshore Dr", city: "Miami", neighborhood: "Coconut Grove", price: "$6,250,000", type: "Single Family", beds: 5, baths: 5.5, sqft: "6,100", image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1600&auto=format&fit=crop", slug: "2500-s-bayshore-dr" },
-  { id: 6, address: "8955 Collins Ave", city: "Surfside", neighborhood: "Surfside", price: "$12,500,000", type: "Condo", beds: 4, baths: 5.5, sqft: "5,400", image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1600&auto=format&fit=crop", slug: "8955-collins-ave" },
-];
-
 export default function ListingsPage() {
   const [filterType, setFilterType] = useState("All");
   const [filterNeighborhood, setFilterNeighborhood] = useState("All Neighborhoods");
@@ -25,12 +16,7 @@ export default function ListingsPage() {
   useEffect(() => {
     const fetchProps = async () => {
       const dbProps = await getAllProperties();
-      // If DB is empty, use the rich mock data to keep the site looking great
-      if (dbProps.length > 0) {
-        setLiveListings(dbProps);
-      } else {
-        setLiveListings(ALL_LISTINGS);
-      }
+      setLiveListings(dbProps);
       setIsLoading(false);
     };
     fetchProps();
