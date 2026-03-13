@@ -17,10 +17,16 @@ const ALL_LISTINGS = [
 
 export default function ListingsPage() {
   const [filterType, setFilterType] = useState("All");
+  const [filterNeighborhood, setFilterNeighborhood] = useState("All Neighborhoods");
 
-  const filteredListings = filterType === "All" 
-    ? ALL_LISTINGS 
-    : ALL_LISTINGS.filter(l => l.type === filterType);
+  // Get unique neighborhoods for the filter
+  const neighborhoods = ["All Neighborhoods", ...Array.from(new Set(ALL_LISTINGS.map(l => l.neighborhood)))];
+
+  const filteredListings = ALL_LISTINGS.filter(l => {
+    const matchType = filterType === "All" || l.type === filterType;
+    const matchNeighborhood = filterNeighborhood === "All Neighborhoods" || l.neighborhood === filterNeighborhood;
+    return matchType && matchNeighborhood;
+  });
 
   return (
     <div className="pt-32 pb-24 bg-[var(--color-primary-bg)] min-h-screen">
@@ -47,20 +53,40 @@ export default function ListingsPage() {
 
         {/* Filters Top Bar */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-          <div className="flex gap-4 overflow-x-auto pb-2 w-full md:w-auto hide-scrollbar">
-            {["All", "Single Family", "Condo", "Townhouse"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilterType(type)}
-                className={`whitespace-nowrap px-6 py-2 uppercase tracking-widest text-xs font-semibold rounded-full border transition-all ${
-                  filterType === type 
-                    ? "bg-[var(--color-primary-text)] text-[var(--color-primary-bg)] border-[var(--color-primary-text)]" 
-                    : "border-gray-300 text-gray-500 hover:border-gray-500"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
+          <div className="flex flex-col gap-4 w-full md:w-auto">
+            {/* Property Type Filter */}
+            <div className="flex gap-4 overflow-x-auto pb-2 w-full hide-scrollbar">
+              {["All", "Single Family", "Condo", "Townhouse"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(type)}
+                  className={`whitespace-nowrap px-6 py-2 uppercase tracking-widest text-xs font-semibold rounded-full border transition-all ${
+                    filterType === type 
+                      ? "bg-[var(--color-primary-text)] text-[var(--color-primary-bg)] border-[var(--color-primary-text)]" 
+                      : "border-gray-300 text-gray-500 hover:border-gray-500 hover:text-black"
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            
+            {/* Neighborhood Filter */}
+            <div className="flex gap-4 overflow-x-auto pb-2 w-full hide-scrollbar">
+              {neighborhoods.map((hood) => (
+                <button
+                  key={hood as string}
+                  onClick={() => setFilterNeighborhood(hood as string)}
+                  className={`whitespace-nowrap px-4 py-1.5 uppercase tracking-widest text-[10px] font-semibold rounded-full border transition-all ${
+                    filterNeighborhood === hood 
+                      ? "bg-gray-800 text-white border-gray-800" 
+                      : "border-gray-200 text-gray-500 hover:border-gray-400 hover:text-black"
+                  }`}
+                >
+                  {hood as string}
+                </button>
+              ))}
+            </div>
           </div>
           
           <button className="flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-widest text-gray-600 hover:text-black transition-colors">

@@ -1,9 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Bed, Bath, Square, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Square, MapPin, Calendar, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Mock data to match what was generated previously. In a real app, this is fetched via slug.
 const MOCK_PROPERTY = {
@@ -16,18 +17,45 @@ const MOCK_PROPERTY = {
   baths: 5,
   sqft: "4,800",
   yearBuilt: "2018",
+  hoaFee: "$2,450/mo",
+  propertyTaxes: "$68,500/yr",
+  lotSize: "N/A (Penthouse)",
+  daysOnMarket: 14,
   description: "Experience unparalleled luxury in this exquisitely designed penthouse at the prestigious Icon. Boasting panoramic views of the Atlantic Ocean and Miami skyline, this masterpiece features soaring 12-foot ceilings, custom Italian cabinetry, and a wraparound terrace perfect for entertaining.",
   images: [
     "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600607688969-a5bfcd64bd0b?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1200&auto=format&fit=crop"
   ],
-  features: ["Wraparound Balcony", "Smart Home Automation", "Private Elevator", "Wine Cellar", "Gourmet Chef's Kitchen", "Ocean Views"]
+  features: ["Wraparound Balcony", "Smart Home Automation", "Private Elevator", "Wine Cellar", "Gourmet Chef's Kitchen", "Ocean Views", "24/7 Concierge", "Infinity Pool Access"]
 };
 
 export default function SingleListingPage({ params }: { params: { slug: string } }) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
   // Normally: const property = await getPropertyBySlug(params.slug);
   const property = MOCK_PROPERTY;
+
+  const nextImage = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex + 1) % property.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex - 1 + property.images.length) % property.images.length);
+    }
+  };
 
   return (
     <div className="bg-[var(--color-primary-bg)] min-h-screen">
@@ -48,16 +76,21 @@ export default function SingleListingPage({ params }: { params: { slug: string }
       />
       
       {/* Hero Gallery */}
-      <section className="relative h-[70vh] w-full pt-20">
+      <section className="relative h-[70vh] w-full pt-20 cursor-pointer group" onClick={() => setLightboxIndex(0)}>
         <div className="absolute inset-0 z-0">
           <Image 
             src={property.images[0]} 
             alt={property.address}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-sm">
+            <span className="bg-white/90 text-black px-6 py-3 uppercase tracking-widest text-sm font-bold shadow-2xl">
+              View All Photos
+            </span>
+          </div>
         </div>
         
         <div className="relative z-10 container mx-auto px-6 h-full flex flex-col justify-end pb-16 text-white max-w-7xl">
@@ -139,13 +172,57 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                 </div>
               </div>
 
-              {/* Secondary Images Gallery */}
-              <div className="grid grid-cols-2 gap-4">
-                {property.images.slice(1).map((img, i) => (
-                  <div key={i} className="relative aspect-square md:aspect-video w-full">
-                    <Image src={img} alt="Property interior" fill className="object-cover" />
+              {/* Premium Details Grid */}
+              <div className="mb-16 bg-white p-8 border border-gray-100 shadow-sm">
+                <h3 className="font-serif text-3xl text-[var(--color-primary-text)] mb-8">Financials & Details</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-4">
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">HOA Dues</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{property.hoaFee}</p>
                   </div>
-                ))}
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Property Taxes</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{property.propertyTaxes}</p>
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Lot Size</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{property.lotSize}</p>
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Price / SqFt</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">${Math.round(parseInt(property.price.replace(/[^0-9]/g, '')) / parseInt(property.sqft.replace(/[^0-9]/g, ''))).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Days on Market</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{property.daysOnMarket}</p>
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Property Type</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{property.type}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Secondary Images Gallery */}
+              <div className="mb-16">
+                <h3 className="font-serif text-3xl text-[var(--color-primary-text)] mb-8">Photo Gallery</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {property.images.slice(1).map((img, i) => (
+                    <div 
+                      key={i} 
+                      className="relative aspect-square overflow-hidden cursor-pointer group"
+                      onClick={() => setLightboxIndex(i + 1)}
+                    >
+                      <Image 
+                        src={img} 
+                        alt={`Property interior ${i + 1}`} 
+                        fill 
+                        className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -183,6 +260,57 @@ export default function SingleListingPage({ params }: { params: { slug: string }
           </div>
         </div>
       </section>
+
+      {/* Full-Screen Lightbox */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setLightboxIndex(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[110]"
+            >
+              <X size={36} />
+            </button>
+
+            {/* Navigation Buttons */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute left-6 text-white/50 hover:text-white transition-colors z-[110] p-4"
+            >
+              <ChevronLeft size={48} />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="absolute right-6 text-white/50 hover:text-white transition-colors z-[110] p-4"
+            >
+              <ChevronRight size={48} />
+            </button>
+
+            {/* Main Image */}
+            <div className="relative w-full h-full max-w-6xl max-h-[85vh] mx-16" onClick={(e) => e.stopPropagation()}>
+              <Image
+                src={property.images[lightboxIndex]}
+                alt={`Property Photo ${lightboxIndex + 1}`}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+
+            {/* Counter */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 font-sans tracking-widest text-sm">
+              {lightboxIndex + 1} / {property.images.length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
