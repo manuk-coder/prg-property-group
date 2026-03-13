@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
+import { getAllProperties } from "@/lib/firebaseUtils";
 
 const ALL_LISTINGS = [
   { id: 1, address: "1200 Brickell Bay Dr", city: "Miami", neighborhood: "Brickell", price: "$4,250,000", type: "Condo", beds: 3, baths: 3.5, sqft: "3,100", image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1600&auto=format&fit=crop", slug: "1200-brickell-bay-dr" },
@@ -18,11 +19,27 @@ const ALL_LISTINGS = [
 export default function ListingsPage() {
   const [filterType, setFilterType] = useState("All");
   const [filterNeighborhood, setFilterNeighborhood] = useState("All Neighborhoods");
+  const [liveListings, setLiveListings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProps = async () => {
+      const dbProps = await getAllProperties();
+      // If DB is empty, use the rich mock data to keep the site looking great
+      if (dbProps.length > 0) {
+        setLiveListings(dbProps);
+      } else {
+        setLiveListings(ALL_LISTINGS);
+      }
+      setIsLoading(false);
+    };
+    fetchProps();
+  }, []);
 
   // Get unique neighborhoods for the filter
-  const neighborhoods = ["All Neighborhoods", ...Array.from(new Set(ALL_LISTINGS.map(l => l.neighborhood)))];
+  const neighborhoods = ["All Neighborhoods", ...Array.from(new Set(liveListings.map(l => l.neighborhood)))];
 
-  const filteredListings = ALL_LISTINGS.filter(l => {
+  const filteredListings = liveListings.filter(l => {
     const matchType = filterType === "All" || l.type === filterType;
     const matchNeighborhood = filterNeighborhood === "All Neighborhoods" || l.neighborhood === filterNeighborhood;
     return matchType && matchNeighborhood;
@@ -94,33 +111,41 @@ export default function ListingsPage() {
           </button>
         </div>
 
-        {/* Grid */}
-        <motion.div 
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
-        >
-          {filteredListings.map((property, index) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              key={property.id}
-              className="group cursor-pointer"
-            >
-              <Link href={`/listings/${property.slug}`}>
-                <div className="relative aspect-[4/3] overflow-hidden mb-6">
-                  <Image 
-                    src={property.image} 
-                    alt={property.address}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 text-xs uppercase tracking-widest font-bold">
-                    {property.type}
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-accent-gold)] mb-4" />
+            <p className="font-sans text-xs uppercase tracking-widest text-gray-500 font-bold">Synchronizing Portfolio...</p>
+          </div>
+        ) : (
+          /* Grid */
+          <motion.div 
+            layout
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
+          >
+            {filteredListings.map((property, index) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                key={property.id}
+                className="group cursor-pointer"
+              >
+                <Link href={`/listings/${property.slug || property.id}`}>
+                  <div className="relative aspect-[4/3] overflow-hidden mb-6 bg-gray-100">
+                    {/* Handle both mock string images and Firebase Image objects */}
+                    <Image 
+                      src={typeof property.image === 'string' ? property.image : (property.images?.[0]?.url || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1600")} 
+                      alt={property.address}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 text-xs uppercase tracking-widest font-bold">
+                      {property.type}
+                    </div>
                   </div>
-                </div>
 
                 <div>
                   <div className="flex justify-between items-start mb-2">
@@ -133,13 +158,14 @@ export default function ListingsPage() {
                     <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                     <span>{property.baths} BA</span>
                     <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span>{property.sqft} SF</span>
+                    <span>{property.sqft?.toLocaleString() || 'N/A'} SF</span>
                   </div>
                 </div>
               </Link>
             </motion.div>
           ))}
         </motion.div>
+        )}
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Bed, Bath, Square, MapPin, Calendar, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Square, MapPin, Calendar, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { getPropertyBySlug } from "@/lib/firebaseUtils";
 
 // Mock data to match what was generated previously. In a real app, this is fetched via slug.
 const MOCK_PROPERTY = {
@@ -41,9 +42,41 @@ const MOCK_PROPERTY = {
 
 export default function SingleListingPage({ params }: { params: { slug: string } }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [property, setProperty] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Normally: const property = await getPropertyBySlug(params.slug);
-  const property = MOCK_PROPERTY;
+  useEffect(() => {
+    const fetchProperty = async () => {
+      const dbProp = await getPropertyBySlug(params.slug);
+      if (dbProp) {
+        setProperty(dbProp);
+      } else {
+        // Fallback to mock data if not in DB to preserve UI demos
+        setProperty(MOCK_PROPERTY);
+      }
+      setLoading(false);
+    };
+    fetchProperty();
+  }, [params.slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--color-primary-bg)] flex flex-col items-center justify-center pt-24">
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--color-accent-gold)] mb-4" />
+        <p className="font-sans text-xs uppercase tracking-widest text-gray-500 font-bold">Accessing Secure Vault...</p>
+      </div>
+    );
+  }
+
+  // Format price if it's a raw number from DB
+  const displayPrice = typeof property.price === 'number' 
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(property.price)
+    : property.price;
+
+  // Calculate Price per SqFt safely
+  const rawPrice = typeof property.price === 'number' ? property.price : parseInt(String(property.price).replace(/[^0-9]/g, ''));
+  const rawSqft = typeof property.sqft === 'number' ? property.sqft : parseInt(String(property.sqft).replace(/[^0-9]/g, ''));
+  const pricePerSqFt = rawPrice && rawSqft ? `$${Math.round(rawPrice / rawSqft).toLocaleString()}` : 'N/A';
 
   const nextImage = () => {
     if (lightboxIndex !== null) {
@@ -66,10 +99,10 @@ export default function SingleListingPage({ params }: { params: { slug: string }
           "@type": "RealEstateListing",
           "name": property.address,
           "description": property.description,
-          "image": property.images.map(img => img.url),
+          "image": property.images?.map((img: any) => img.url),
           "offers": {
             "@type": "Offer",
-            "price": property.price.replace(/[^0-9]/g, ''),
+            "price": rawPrice,
             "priceCurrency": "USD"
           }
         })}}
@@ -77,14 +110,16 @@ export default function SingleListingPage({ params }: { params: { slug: string }
       
       {/* Hero Gallery */}
       <section className="relative h-[70vh] w-full pt-20 cursor-pointer group" onClick={() => setLightboxIndex(0)}>
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src={property.images[0].url} 
-            alt={property.address}
-            fill
-            className="object-cover transition-transform duration-1000 group-hover:scale-105"
-            priority
-          />
+        <div className="absolute inset-0 z-0 bg-gray-900">
+          {property.images?.[0] && (
+            <Image 
+              src={property.images[0].url || property.images[0]} 
+              alt={property.address}
+              fill
+              className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
+              priority
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-sm">
             <span className="bg-white/90 text-black px-6 py-3 uppercase tracking-widest text-sm font-bold shadow-2xl">
@@ -112,7 +147,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                 <p className="font-sans text-xl opacity-90">{property.neighborhood}, {property.city}</p>
               </div>
               <div className="text-left md:text-right">
-                <span className="block font-sans text-4xl md:text-5xl font-bold mb-2">{property.price}</span>
+                <span className="block font-sans text-4xl md:text-5xl font-bold mb-2">{displayPrice}</span>
                 <span className="font-sans uppercase tracking-widest text-sm opacity-80">Listed Price</span>
               </div>
             </div>
@@ -141,7 +176,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                 </div>
                 <div className="flex flex-col items-center justify-center p-4 border-t md:border-t-0 md:border-l border-gray-300">
                   <Square size={24} className="text-[var(--color-accent-gold)] mb-3" />
-                  <span className="font-serif text-2xl font-bold text-[var(--color-primary-text)]">{property.sqft}</span>
+                  <span className="font-serif text-2xl font-bold text-[var(--color-primary-text)]">{property.sqft?.toLocaleString()}</span>
                   <span className="font-sans text-xs uppercase tracking-widest text-gray-500">Square Feet</span>
                 </div>
                 <div className="flex flex-col items-center justify-center p-4 border-t md:border-t-0 md:border-l border-gray-300">
@@ -163,7 +198,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
               <div className="mb-16">
                 <h3 className="font-serif text-3xl text-[var(--color-primary-text)] mb-8">Distinguishing Features</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {property.features.map(feature => (
+                  {property.features?.map((feature: string) => (
                     <div key={feature} className="flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-gold)]" />
                       <span className="font-sans text-gray-700">{feature}</span>
@@ -190,7 +225,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                   </div>
                   <div>
                     <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Price / SqFt</p>
-                    <p className="font-sans text-lg font-semibold text-gray-900">${Math.round(parseInt(property.price.replace(/[^0-9]/g, '')) / parseInt(property.sqft.replace(/[^0-9]/g, ''))).toLocaleString()}</p>
+                    <p className="font-sans text-lg font-semibold text-gray-900">{pricePerSqFt}</p>
                   </div>
                   <div>
                     <p className="font-sans text-xs uppercase tracking-widest text-gray-500 mb-1">Days on Market</p>
@@ -207,14 +242,14 @@ export default function SingleListingPage({ params }: { params: { slug: string }
               <div className="mb-16">
                 <h3 className="font-serif text-3xl text-[var(--color-primary-text)] mb-8">Photo Gallery</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {property.images.slice(1).map((img, i) => (
+                  {property.images?.slice(1).map((img: any, i: number) => (
                     <div 
                       key={i} 
-                      className="relative aspect-square overflow-hidden cursor-pointer group"
+                      className="relative aspect-square overflow-hidden cursor-pointer group bg-gray-100"
                       onClick={() => setLightboxIndex(i + 1)}
                     >
                       <Image 
-                        src={img.url} 
+                        src={img.url || img} 
                         alt={`Property interior ${i + 1}`} 
                         fill 
                         className="object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -304,7 +339,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
             {/* Main Image */}
             <div className="relative w-full h-full max-w-6xl max-h-[70vh] md:max-h-[80vh] mx-2 md:mx-16 mt-8" onClick={(e) => e.stopPropagation()}>
               <Image
-                src={property.images[lightboxIndex].url}
+                src={property.images[lightboxIndex].url || property.images[lightboxIndex]}
                 alt={property.images[lightboxIndex].caption || `Property Photo ${lightboxIndex + 1}`}
                 fill
                 className="object-contain"
@@ -320,7 +355,7 @@ export default function SingleListingPage({ params }: { params: { slug: string }
                 </p>
               )}
               <div className="text-white/70 font-sans tracking-widest text-xs md:text-sm bg-black/40 backdrop-blur-sm px-4 py-1 rounded-full">
-                {lightboxIndex + 1} / {property.images.length}
+                {lightboxIndex + 1} / {property.images?.length}
               </div>
             </div>
           </motion.div>

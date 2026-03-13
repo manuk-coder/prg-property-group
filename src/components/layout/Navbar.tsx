@@ -5,11 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { getFeaturedNeighborhoods } from "@/lib/firebaseUtils";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dynamicNeighborhoods, setDynamicNeighborhoods] = useState<{name: string, href: string}[]>([]);
   const pathname = usePathname();
 
   // Pages that start with a dark background hero (Homepage, Single Listing)
@@ -21,7 +23,22 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 50);
     };
 
+    const fetchNeighborhoods = async () => {
+      const hoods = await getFeaturedNeighborhoods();
+      if (hoods.length > 0) {
+        setDynamicNeighborhoods(hoods.map((h: any) => ({ name: h.name, href: `/neighborhoods/${h.id}` })));
+      } else {
+        // Fallback if DB is empty during initial setup
+        setDynamicNeighborhoods([
+          { name: "Key Biscayne", href: "/neighborhoods/key-biscayne" },
+          { name: "Miami Midtown", href: "/neighborhoods/midtown" },
+          { name: "Design District", href: "/neighborhoods/design-district" },
+        ]);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
+    fetchNeighborhoods();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -30,10 +47,9 @@ export function Navbar() {
     { 
       name: "Neighborhoods", 
       href: "#",
-      dropdown: [
-        { name: "Key Biscayne", href: "/neighborhoods/key-biscayne" },
-        { name: "Miami Midtown", href: "/neighborhoods/midtown" },
-        { name: "Design District", href: "/neighborhoods/design-district" },
+      dropdown: dynamicNeighborhoods.length > 0 ? dynamicNeighborhoods : [
+        // Placeholder to prevent empty menu flash
+        { name: "Loading...", href: "#" }
       ]
     },
     { name: "Management", href: "/property-management" },
