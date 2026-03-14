@@ -4,17 +4,17 @@ import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
 
 export default function AdminAuthGuard({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check session storage on mount
     const auth = sessionStorage.getItem("adminAuth");
     if (auth === "palus999") {
       setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
     }
   }, []);
 
@@ -30,9 +30,8 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
     }
   };
 
-  // Prevent flash of login screen before mounting checks sessionStorage
-  if (isAuthenticated === null) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center" />;
+  if (!mounted) {
+    return null; // Return nothing on server to prevent mismatch
   }
 
   if (!isAuthenticated) {
