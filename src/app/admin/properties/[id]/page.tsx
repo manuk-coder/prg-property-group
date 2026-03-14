@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, UploadCloud, X, Loader2, GripVertical, Image as ImageIcon } from "lucide-react";
@@ -11,12 +11,13 @@ import { db, storage } from "@/lib/firebase";
 const PROPERTY_TYPES = ["Condo", "Single Family", "Townhouse", "Land", "Commercial"];
 const PROPERTY_STATUSES = ["Active", "Coming Soon", "Pending", "Sold", "Off-Market"];
 
-export default function PropertyEditor({ params }: { params: { id: string } }) {
+export default function PropertyEditor({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const isNew = params.id === "new";
+  const resolvedParams = use(params);
+  const isNew = resolvedParams.id === "new";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [loading, setLoading] = useState(!isNew);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -34,7 +35,7 @@ export default function PropertyEditor({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (!isNew) {
       const fetchProperty = async () => {
-        const docRef = doc(db, "properties", params.id);
+        const docRef = doc(db, "properties", resolvedParams.id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -53,8 +54,10 @@ export default function PropertyEditor({ params }: { params: { id: string } }) {
         setLoading(false);
       };
       fetchProperty();
+    } else {
+      setLoading(false); // If it's new, we're done loading immediately
     }
-  }, [params.id, isNew]);
+  }, [resolvedParams.id, isNew]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

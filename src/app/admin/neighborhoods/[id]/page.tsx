@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export default function NeighborhoodEditor({ params }: { params: { id: string } }) {
+export default function NeighborhoodEditor({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const isNew = params.id === "new";
+  const resolvedParams = use(params);
+  const isNew = resolvedParams.id === "new";
 
-  const [loading, setLoading] = useState(!isNew);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function NeighborhoodEditor({ params }: { params: { id: string } 
   useEffect(() => {
     if (!isNew) {
       const fetchNeighborhood = async () => {
-        const docRef = doc(db, "neighborhoods", params.id);
+        const docRef = doc(db, "neighborhoods", resolvedParams.id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -44,8 +45,10 @@ export default function NeighborhoodEditor({ params }: { params: { id: string } 
         setLoading(false);
       };
       fetchNeighborhood();
+    } else {
+      setLoading(false); // If it's new, we're done loading immediately
     }
-  }, [params.id, isNew]);
+  }, [resolvedParams.id, isNew]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
